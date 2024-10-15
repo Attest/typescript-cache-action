@@ -26,7 +26,7 @@ jobs:
           cache-base-key: ${{ runner.os }}
           # cache key
           cache-key: ${{ github.sha }}
-          # base ref to restore timestamps
+          # base ref to restore timestamps to
           base-ref: ${{ github.event.repository.default_branch }}
           # output files to restore cache for
           files: |
@@ -45,8 +45,6 @@ jobs:
           cache-base-key: ${{ runner.os }}
           # cache key
           cache-key: ${{ github.sha }}
-          # base ref to restore timestamps
-          base-ref: ${{ github.event.repository.default_branch }}
           # output files to restore cache for
           files: |
             **/types/**/*.d.ts

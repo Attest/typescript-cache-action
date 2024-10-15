@@ -13,10 +13,6 @@ inputs:
     description: 'Cache key for saving cache'
     required: false
     default: ''
-  base-ref:
-    description: 'Base ref for saving cache'
-    required: false
-    default: 'main'
   files:
     description: 'Cache for tsc output files'
     required: true
@@ -28,4 +24,4 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: ${{ inputs.files }}
-        key: ${{ inputs.cache-base-key }}-${{ inputs.base-ref }}-${{ inputs.cache-key }}
+        key: ${{ inputs.cache-base-key }}-${{ inputs.cache-key }}
