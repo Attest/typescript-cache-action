@@ -1,0 +1,31 @@
+name: 'TypeScript Cache Action'
+description: 'A Github Action to save Typescript `tsc --build` cache for incremental runs'
+branding:
+  icon: 'arrow-right-circle'
+  color: 'gray-dark'
+
+inputs:
+  cache-base-key:
+    description: 'Base cache key for saving cache'
+    required: false
+    default: ''
+  cache-key:
+    description: 'Cache key for saving cache'
+    required: false
+    default: ''
+  base-ref:
+    description: 'Base ref for saving cache'
+    required: false
+    default: 'main'
+  files:
+    description: 'Cache for tsc output files'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: save tsc build cache
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ inputs.files }}
+        key: ${{ inputs.cache-base-key }}-${{ inputs.base-ref }}-${{ inputs.cache-key }}

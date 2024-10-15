@@ -1,0 +1,49 @@
+name: 'TypeScript Cache Action'
+description: 'A Github Action to cache Typescript `tsc --build` for incremental runs'
+branding:
+  icon: 'arrow-left-circle'
+  color: 'gray-dark'
+
+inputs:
+  cache-base-key:
+    description: 'Base cache key for restoring cache'
+    required: false
+    default: ''
+  cache-key:
+    description: 'cache key for restoring cache'
+    required: false
+    default: ''
+  base-ref:
+    description: 'Base ref for restoring/saving cache'
+    required: false
+    default: 'main'
+  files:
+    description: 'Cache for tsc output files'
+    required: true
+  
+
+runs:
+  using: 'composite'
+  steps:
+    - name: restore tsc build cache
+      id: tsc-build-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: ${{ inputs.files }}
+        key: ${{ inputs.cache-base-key }}-${{ inputs.base-ref }}-${{ inputs.cache-key }}
+        restore-keys: |
+          ${{ inputs.cache-base-key }}-${{ inputs.base-ref }}-${{ inputs.cache-key }}
+          ${{ inputs.cache-base-key }}-${{ inputs.base-ref }}
+    - name: restore timestamps of all files to base branch commit
+      shell: bash
+      run: find . -type f -exec touch -c -m -t $(git log -1 --format=%cd --date=format:%y%m%d%H%M.%S ${{ inputs.base-ref }}) {} + 
+
+    - name: changed source files 
+      uses: tj-actions/changed-files@v45
+      id: changed-source-files
+      with:
+        base_sha: ${{ inputs.base-ref }}
+    - name: restore timestamps to source files with head ref timestamp
+      if: steps.changed-source-files.outputs.any_changed == 'true'
+      shell: bash
+      run: touch -c -m ${{ steps.changed-source-files.outputs.all_changed_files }}
