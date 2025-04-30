@@ -2,7 +2,8 @@
 
 This action allows caching TypeScript build information and types for incremental typecheck runs within github actions.
 
-This is still WIP.
+This demonstrates and encapsulates the process for incremental builds in CI with TypeScript. 
+We use this in many projects and has been working for our use case, feel free to open contributions or issues to provide feedback. 
 
 ## Documentation
 
