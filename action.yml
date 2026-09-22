@@ -37,9 +37,14 @@ runs:
         restore-keys: |
           ${{ inputs.cache-base-key }}-${{ inputs.cache-key }}
           ${{ inputs.cache-base-key }}
+    # `format-local` renders the commit in the runner's timezone, which is the one `touch -t`
+    # reads the result back in. Plain `format` uses the commit's own zone, so a commit made at
+    # +0100 stamps every file an hour ahead -- ahead of "now" for a job starting within that
+    # hour, which leaves the changed files touched below older than everything else and tsc
+    # skipping the very projects it was meant to rebuild.
     - name: restore timestamps of all files to base branch commit
       shell: bash
-      run: find . -type f -exec touch -c -m -t $(git log -1 --format=%cd --date=format:%y%m%d%H%M.%S ${{ inputs.base-ref }}) {} + 
+      run: find . -type f -exec touch -c -m -t $(git log -1 --format=%cd --date=format-local:%y%m%d%H%M.%S ${{ inputs.base-ref }}) {} +
 
     - name: changed source files 
       uses: tj-actions/changed-files@v45
