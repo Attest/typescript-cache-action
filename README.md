@@ -67,6 +67,8 @@ Firstly this action restore the latest cache of the typescript output files (`fi
 
 At this stage, the cached timestamps are when the cache was created and the source files are when checked out. The modified timestamps of all files are restored to the base branch head commit timestamp. This ensures that the timestamps for all files are stable and are before any committed changes.
 
+That commit timestamp is read in the runner's timezone rather than the commit's own, because `touch` interprets it in the runner's. Reading it in the commit's zone lets a commit made ahead of the runner -- `+0100` against a runner on UTC -- stamp every file into the future, and the changed files touched in the next step then look *older* than the unchanged ones. That inverts the state below, and `tsc --build` skips the projects it should have rebuilt rather than rebuilding too many, so the failure surfaces as a stale type error rather than a slow job.
+
 ### Restore timestamps of changed files in git
 For any changed files detected by git the modified timestamps are restored to current timestamp.
 
